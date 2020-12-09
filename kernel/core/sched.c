@@ -1,7 +1,6 @@
 /*
  *                               POK header
- *
- * The following file is a part of the POK project. Any modification should
+ * * The following file is a part of the POK project. Any modification should
  * made according to the POK licence. You CANNOT use this file or a part of
  * this file is this part of a file for your own project
  *
@@ -463,6 +462,20 @@ uint32_t pok_sched_part_rms (const uint32_t index_low, const uint32_t index_high
 }
 #endif /* POK_NEEDS_SCHED_RMS */
 
+// TODO: implement edf schedule
+uint32_t pok_sched_part_edf(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
+	return NULL;
+}
+
+// TODO: implement fp schedule
+uint32_t pok_sched_part_fp(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
+	return NULL;
+}
+
+// TODO: implement wrr schedule
+uint32_t pok_sched_part_wrr(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
+	return NULL;
+}
 
 uint32_t pok_sched_part_rr (const uint32_t index_low, const uint32_t index_high,const uint32_t prev_thread,const uint32_t current_thread)
 {
