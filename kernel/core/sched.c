@@ -470,6 +470,24 @@ uint32_t pok_sched_part_edf(const uint32_t index_low, const uint32_t index_high,
 	uint32_t from;
 #endif
 
+	res = index_low;
+	uint32_t current_earliest_deadline = POK_THREAD_MAX_DEADLINE; 
+	uint32_t current_earliest_deadline_thread = res;
+
+	do {
+		if (pok_threads[res].deadline < current_earliest_deadline && pok_threads[res].state == POK_STATE_RUNNABLE) {
+			current_earliest_deadline = pok_threads[res].deadline;
+			current_earliest_deadline_thread = res;
+		}
+		res++;
+	} while(res < index_high);
+
+	res = current_earliest_deadline_thread;
+
+	if ((res == index_low) && (pok_threads[res].state != POK_STATE_RUNNABLE)) {
+		res = IDLE_THREAD;
+	}
+
 #ifdef POK_NEEDS_DEBUG
 	if (res != IDLE_THREAD) {
 		printf("--- scheduling thread: %d {%d} --- ", res, pok_threads[res].period);
@@ -548,7 +566,38 @@ uint32_t pok_sched_part_fp(const uint32_t index_low, const uint32_t index_high, 
 
 // TODO: implement wrr schedule
 uint32_t pok_sched_part_wrr(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
-	return NULL;
+	uint32_t res;
+	uint32_t from;
+	from = prev_thread;
+
+	if (current_thread == IDLE_THREAD) {
+		res = prev_thread;
+	} else {
+		res = current_thread;
+	}
+
+	if ((pok_threads[current_thread].remaining_time_capacity > 0) && (pok_threads[current_thread].state == POK_STATE_RUNNABLE)){
+		return current_thread;
+	}
+
+	res = index_low;
+	uint32_t index = index_low;
+	uint32_t total = 0;
+
+	do {
+		if (pok_threads[index].state != POK_STATE_RUNNABLE){
+			continue;
+		}
+		pok_threads[index].current_weight = pok_threads[index].weight;
+		total += pok_threads[index].weight;
+		if (res == index_low || pok_threads[res].current_weight < pok_threads[index].current_weight) {
+			res = index;
+		}
+		index++;
+	} while (index < index_high);
+	pok_threads[res].current_weight -= total;
+
+	return res;
 }
 
 uint32_t pok_sched_part_rr (const uint32_t index_low, const uint32_t index_high,const uint32_t prev_thread,const uint32_t current_thread)

@@ -42,7 +42,7 @@
 */
 
 #define POK_THREAD_MAX_PRIORITY  200
-
+#define POK_THREAD_MAX_DEADLINE  100000
 
 /*
  * IDLE_STACK_SIZE is the stack size of the idle thread
@@ -66,6 +66,8 @@ typedef struct
 	 pok_state_t  state;
 	 uint64_t	end_time;
 	 uint64_t     wakeup_time;
+	 uint32_t     weight;
+	 uint32_t     current_weight;
 #ifdef POK_NEEDS_SCHED_HFPPS
 	 uint64_t	payback; /**< Payback for HFPPS scheduling algorithm */
 #endif /* POK_NEEDS_SCHED_HFPPS */
@@ -83,10 +85,12 @@ typedef struct
 	 uint8_t      priority;         /* Priority is from 0 to 255 */
 	 void*        entry;            /* entrypoint of the thread  */
 	 uint64_t     period;
-	 uint64_t     deadline;
+	 uint64_t     deadline;			/* assume the deadline is absolute time*/
 	 uint64_t     time_capacity;
 	 uint32_t     stack_size;
 	 pok_state_t  state;
+	 uint32_t     weight;
+	 uint32_t     current_weight;
 } pok_thread_attr_t;
 /*
  * Attributes given to create a thread
