@@ -498,7 +498,7 @@ uint32_t pok_sched_part_edf(const uint32_t index_low, const uint32_t index_high,
 				}
 				from++;
 		}
-		printf(" are runnable; \n\t\t"");
+		printf(" are runnable; \n\t\t");
 		from = index_low;
 		while (from <= index_high) {
 				if (pok_threads[from].state != POK_STATE_RUNNABLE) {
