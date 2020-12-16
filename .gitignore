@@ -77,4 +77,9 @@ tags
 # Persistent undo
 [._]*.un~
 
+.img
+.depend.mk
+.pid
+.mk.bak
+.depend
 # End of https://www.toptal.com/developers/gitignore/api/vim,c
