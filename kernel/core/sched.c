@@ -514,7 +514,6 @@ uint32_t pok_sched_part_edf(const uint32_t index_low, const uint32_t index_high,
 #endif
 
 #ifdef POK_NEEDS_SCHED_FP
-// TODO: add fp test
 uint32_t pok_sched_part_fp(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
 	uint32_t res;
 #ifdef POK_NEEDS_DEBUG
@@ -564,7 +563,7 @@ uint32_t pok_sched_part_fp(const uint32_t index_low, const uint32_t index_high, 
 }
 #endif
 
-// TODO: implement wrr schedule
+#ifdef POK_NEEDS_SCHED_WRR
 uint32_t pok_sched_part_wrr(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
 	uint32_t res;
 	uint32_t from;
@@ -599,6 +598,7 @@ uint32_t pok_sched_part_wrr(const uint32_t index_low, const uint32_t index_high,
 
 	return res;
 }
+#endif
 
 uint32_t pok_sched_part_rr (const uint32_t index_low, const uint32_t index_high,const uint32_t prev_thread,const uint32_t current_thread)
 {
