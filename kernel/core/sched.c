@@ -1,6 +1,7 @@
 /*
  *                               POK header
- * * The following file is a part of the POK project. Any modification should
+ *
+ * The following file is a part of the POK project. Any modification should
  * made according to the POK licence. You CANNOT use this file or a part of
  * this file is this part of a file for your own project
  *
@@ -77,9 +78,65 @@ uint32_t	         current_thread = KERNEL_THREAD;
 
 void pok_sched_thread_switch (void);
 
-/**
- *\\brief Init scheduling service
- */
+#ifdef POK_NEEDS_PARTITIONS_SCHEDULER
+static uint8_t get_next_partition() {
+// TODO finish get_next_partition
+return 0;
+}
+#endif
+
+
+#ifdef POK_NEEDS_PARTITIONS_SCHEDULER
+static uint8_t get_next_partition()
+{
+   static uint8_t flag = 1;
+   uint8_t res = POK_SCHED_CURRENT_PARTITION;
+   uint8_t i = 0;
+   uint8_t type = (uint8_t)POK_CONFIG_PARTITIONS_TYPE;
+   int partitions_max_weight = pok_partitions[0].weight;
+   for (i = 0; i < POK_CONFIG_SCHEDULING_NBSLOTS; i++)
+   {
+      if (pok_partitions[i].weight > partitions_max_weight)
+         partitions_max_weight = pok_partitions[i].weight;
+   }
+
+   if (partitions_max_weight == 0)
+   {
+      type = POK_SCHED_RR;
+      if (flag)
+      {
+         flag--;
+         printf("Partitions scheduler WRR finish, now use RR\n");
+      }
+   }
+
+   switch (type)
+   {
+      case POK_SCHED_WRR:
+         for (i = 0; i < POK_CONFIG_SCHEDULING_NBSLOTS; i++)
+         {
+            if (pok_partitions[i].weight > 0 &&
+                pok_partitions[i].weight == partitions_max_weight)
+            {
+               pok_partitions[i].weight--;
+               pok_sched_current_slot = res = i;
+               break;
+            }
+         }
+         pok_sched_next_deadline = pok_sched_next_deadline + pok_sched_slots[pok_sched_current_slot];
+         break;
+
+      case POK_SCHED_RR:
+      default:
+         // 顺序执行
+         pok_sched_current_slot = (pok_sched_current_slot + 1) % POK_CONFIG_SCHEDULING_NBSLOTS;
+         pok_sched_next_deadline = pok_sched_next_deadline + pok_sched_slots[pok_sched_current_slot];
+         res = pok_sched_slots_allocation[pok_sched_current_slot];
+         break;
+   }
+   return res;
+}
+#endif
 
 void pok_sched_init (void)
 {
@@ -489,7 +546,7 @@ uint32_t pok_sched_part_edf(const uint32_t index_low, const uint32_t index_high,
 	}
 
 #ifdef POK_NEEDS_DEBUG
-	if (res != IDLE_THREAD) {
+/*	if (res != IDLE_THREAD) {
 		printf("--- scheduling thread: %d {%d} --- ", res, pok_threads[res].period);
 		from = index_low;
 		while (from <= index_high) {
@@ -507,9 +564,26 @@ uint32_t pok_sched_part_edf(const uint32_t index_low, const uint32_t index_high,
 				from++;
 		}
 		printf(" are NOT runnable;\n");
-	}
+	}*/
 #endif
 	return res;
+}
+#endif
+#ifdef POK_NEEDS_SCHED_MLFQ
+uint32_t pok_sched_part_mlfq(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
+    uint32_t res;
+}
+#endif
+
+#ifdef POK_NEEDS_SCHED_MLFQ
+uint32_t pok_sched_part_mlfq(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
+    uint32_t res;
+}
+#endif
+
+#ifdef POK_NEEDS_SCHED_MLFQ
+uint32_t pok_sched_part_mlfq(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
+    uint32_t res;
 }
 #endif
 
@@ -539,7 +613,7 @@ uint32_t pok_sched_part_fp(const uint32_t index_low, const uint32_t index_high, 
 	}
 
 #ifdef POK_NEEDS_DEBUG
-	if (res != IDLE_THREAD) {
+	/*if (res != IDLE_THREAD) {
 		printf("--- scheduling thread: %d {%d} --- ", res, pok_threads[res].period);
 		from = index_low;
 		while (from <= index_high) {
@@ -548,7 +622,7 @@ uint32_t pok_sched_part_fp(const uint32_t index_low, const uint32_t index_high, 
 				}
 				from++;
 		}
-		printf(" are runnable; \n\t\t"");
+		printf(" are runnable; \n\t\t");
 		from = index_low;
 		while (from <= index_high) {
 				if (pok_threads[from].state != POK_STATE_RUNNABLE) {
@@ -558,45 +632,107 @@ uint32_t pok_sched_part_fp(const uint32_t index_low, const uint32_t index_high, 
 		}
 		printf(" are NOT runnable;\n");
 	}
+*/
 #endif
 	return res;
 }
 #endif
 
+static int gcd(int a, int b)
+{
+   if (a < b) 
+   {
+      int c = a;
+      a = b;
+      b = c;
+   }
+   return (b == 0) ? a : gcd(b, a % b);
+}
 #ifdef POK_NEEDS_SCHED_WRR
 uint32_t pok_sched_part_wrr(const uint32_t index_low, const uint32_t index_high, const uint32_t prev_thread, const uint32_t current_thread) {
-	uint32_t res;
-	uint32_t from;
-	from = prev_thread;
+   uint32_t res;
+   uint32_t from;
 
-	if (current_thread == IDLE_THREAD) {
-		res = prev_thread;
-	} else {
-		res = current_thread;
-	}
+   if (current_thread == IDLE_THREAD)
+      res = prev_thread;
+   else
+      res = current_thread;
 
-	if ((pok_threads[current_thread].remaining_time_capacity > 0) && (pok_threads[current_thread].state == POK_STATE_RUNNABLE)){
-		return current_thread;
-	}
+   from = res;
 
-	res = index_low;
-	uint32_t index = index_low;
-	uint32_t total = 0;
+   int weight_gcd = 0;
+   for (uint32_t i = index_low; i < index_high; i++) {
+      if (pok_threads[i].state == POK_STATE_RUNNABLE) {
+         if (weight_gcd!= 0) {
+            weight_gcd = gcd(weight_gcd, pok_threads[i].weight);
+         }
+         else {
+            weight_gcd = pok_threads[i].weight;
+         }
+      }
+   }
 
-	do {
-		if (pok_threads[index].state != POK_STATE_RUNNABLE){
-			continue;
-		}
-		pok_threads[index].current_weight = pok_threads[index].weight;
-		total += pok_threads[index].weight;
-		if (res == index_low || pok_threads[res].current_weight < pok_threads[index].current_weight) {
-			res = index;
-		}
-		index++;
-	} while (index < index_high);
-	pok_threads[res].current_weight -= total;
+   // get max weight
+   int weight_max = (1 << 31);
+   for (uint32_t i = index_low; i < index_high; i++) {
+      if (pok_threads[i].state == POK_STATE_RUNNABLE &&
+          pok_threads[i].weight > weight_max) {
+         weight_max = pok_threads[i].weight;
+      }
+   }
 
-	return res;
+   if (weight_max <= 0)
+      return IDLE_THREAD;
+   for (i = index_low; i <= index_high; i++)
+   {
+      if (pok_threads[i].weight > 0 && pok_threads[i].weight == weight_max)
+      {
+      res = prev_thread;
+   else
+      res = current_thread;
+
+   from = res;
+
+   uint32_t i = index_low - 1;
+   int current_weight = 0;
+   if (pok_partitions[pok_current_partition].prev_thread != IDLE_THREAD) {
+      i = pok_partitions[pok_current_partition].prev_thread;
+   }
+
+   if (pok_partitions[pok_current_partition].current_weight != 0) {
+      current_weight = pok_partitions[pok_current_partition].current_weight;
+   }
+
+   for (i = index_low; i <= index_high; i++) {
+      if (pok_threads[i].weight > 0 && pok_threads[i].weight == weight_max) {
+         pok_threads[i].weight--;
+         return i;
+      }
+   }
+
+   i = index_low;
+   do {
+     if (i == index_low) {
+         pok_partitions[pok_current_partition].current_weight = current_weight = current_weight - weight_gcd;
+         if (current_weight <= 0) {
+            pok_partitions[pok_current_partition].current_weight = current_weight = weight_max;
+            if (current_weight == 0) {
+               res = IDLE_THREAD;
+               break;
+            }
+         }
+      }
+      if (pok_threads[i].weight >= current_weight) {
+	 res = i;
+	 break;
+      }
+      i++;
+   } while(i <= index_high);
+   
+   if ((res == from) && (pok_threads[res].state != POK_STATE_RUNNABLE)) {
+      res = IDLE_THREAD;
+   }
+   return res;
 }
 #endif
 

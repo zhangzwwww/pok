@@ -28,4 +28,6 @@
 
 #define POK_NEEDS_LIBC_STDLIB 1
 
+#define POK_NEEDS_SCHED_WRR 1
+
 #endif

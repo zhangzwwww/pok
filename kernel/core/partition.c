@@ -65,21 +65,7 @@ void pok_partition_setup_scheduler (const uint8_t pid)
             pok_partitions[pid].sched_func  = &pok_sched_part_rms;
             break;
 #endif
-#ifdef POK_NEEDS_SCHED_EDF
-		case POK_SCHED_EDF:
-			pok_partitions[pid].sched_func = &pok_sched_part_edf;
-			break;
-#endif
-#ifdef POK_NEEDS_SCHED_FP
-		case POK_SCHED_FP:
-			pok_partitions[pid].sched_func = &pok_sched_part_fp;
-			break;
-#endif
-#ifdef POK_NEEDS_SCHED_WRR
-		case POK_SCHED_WRR:
-			pok_partitions[pid].sched_func = &pok_sched_part_wrr;
-			break;
-#endif
+
             /*
              * Default scheduling algorithm is Round Robin.
              * Yes, it sucks

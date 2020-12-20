@@ -114,8 +114,6 @@ void pok_thread_init(void)
    pok_threads[IDLE_THREAD].entry		       = pok_arch_idle;
    pok_threads[IDLE_THREAD].base_priority		       = pok_sched_get_priority_min(0);
    pok_threads[IDLE_THREAD].state		       = POK_STATE_RUNNABLE;
-   pok_threads[IDLE_THREAD].weight                     = 0;
-   pok_threads[IDLE_THREAD].current_weight             = 0;
 
    pok_threads[IDLE_THREAD].sp			       = pok_context_create
                                                    (IDLE_THREAD,								             IDLE_STACK_SIZE,
@@ -130,8 +128,6 @@ void pok_thread_init(void)
       pok_threads[i].next_activation            = 0;
       pok_threads[i].wakeup_time                = 0;
       pok_threads[i].state                      = POK_STATE_STOPPED;
-	  pok_threads[i].weight                     = 0;
-	  pok_threads[i].current_weight             = 0;
   }
 }
 
@@ -198,10 +194,6 @@ pok_ret_t pok_partition_thread_create (uint32_t*                  thread_id,
    {
       pok_threads[id].remaining_time_capacity   = POK_THREAD_DEFAULT_TIME_CAPACITY;
       pok_threads[id].time_capacity             = POK_THREAD_DEFAULT_TIME_CAPACITY;
-   }
-
-   if (attr->weight > 0) {
-	   pok_threads[id].weight = attr->weight;
    }
 
    stack_vaddr = pok_thread_stack_addr (partition_id, pok_partitions[partition_id].thread_index);

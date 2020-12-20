@@ -22,6 +22,7 @@
 
 extern uint8_t sid;
 uint8_t val;
+static int thread_num = 0;
 
 void* pinger_job ()
 {
@@ -47,4 +48,10 @@ void* pinger_job2 ()
       printf ("P1T2: pok_sem_wait, ret=%d\n", ret);
       pok_thread_sleep (2000000);
    }
+}
+
+void* pinger_job3()
+{
+	printf("P1T%d\n", thread_num);
+	thread_num++;
 }

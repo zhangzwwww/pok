@@ -33,20 +33,38 @@ int main ()
   ret = pok_sem_create(&sid , 0, 50, POK_SEMAPHORE_DISCIPLINE_FIFO);
   printf("[P1] pok_sem_create return=%d, mid=%d\n", ret, sid);
 
+<<<<<<< Updated upstream
   tattr.priority = 42;
   tattr.deadline = 5000;
+=======
+  tattr.deadline = 42;
+>>>>>>> Stashed changes
   tattr.entry = pinger_job;
 
   ret = pok_thread_create(&tid , &tattr);
   printf("[P1] pok_thread_create (1) return=%d\n", ret);
 
+<<<<<<< Updated upstream
   tattr.priority = 42;
   tattr.deadline = 3000;
+=======
+  tattr.deadline = 22;
+>>>>>>> Stashed changes
   tattr.entry = pinger_job2;
 
   ret = pok_thread_create(&tid , &tattr);
   printf("[P1] pok_thread_create (2) return=%d\n", ret);
 
+<<<<<<< Updated upstream
+=======
+  tattr.deadline = 30;
+  tattr.entry = pinger_job3;
+
+  ret = pok_thread_create(&tid, &tattr);
+  printf("[P1] pok_thread_create (3) return=%d\n", ret);
+
+
+>>>>>>> Stashed changes
   pok_partition_set_mode (POK_PARTITION_MODE_NORMAL);
   pok_thread_wait_infinite ();
 

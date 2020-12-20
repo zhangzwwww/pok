@@ -7,7 +7,11 @@ CC_x86=/usr/bin/gcc
 CD=cd
 CONFIG_CFLAGS=-W -Wall -g -m32
 CONFIG_LDFLAGS=--warn-common
-CONFIG_QEMU_x86= -fda grub-boot-only.img 
+<<<<<<< Updated upstream
+CONFIG_QEMU_x86= -fda grub-boot-only.img -nographic
+=======
+CONFIG_QEMU_x86=-fda grub-boot-only.img -nographic
+>>>>>>> Stashed changes
 COPY=/usr/bin/cp
 CP=/usr/bin/cp
 CXX_x86=/usr/bin/g++

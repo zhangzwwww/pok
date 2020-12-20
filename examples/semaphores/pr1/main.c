@@ -24,8 +24,8 @@
 
 uint8_t sid;
 
-int main ()
-{
+int main (){
+
   uint8_t tid;
   pok_ret_t ret;
   pok_thread_attr_t     tattr;
@@ -45,8 +45,15 @@ int main ()
   ret = pok_thread_create(&tid , &tattr);
   printf("[P1] pok_thread_create (2) return=%d\n", ret);
 
+  while(1){
+	printf(123);
+	tattr.priority = rand();
+	tattr.entry = pinger_job3;
+	ret = pok_thread_create(&tid, &tattr);
+	pok_thread_sleep(50000);
+  }
+   
   pok_partition_set_mode (POK_PARTITION_MODE_NORMAL);
   pok_thread_wait_infinite ();
-
    return (0);
 }

@@ -22,29 +22,42 @@
 
 extern uint8_t sid;
 uint8_t val;
+<<<<<<< Updated upstream
+=======
+uint8_t thread_num = 0;
+>>>>>>> Stashed changes
 
 void* pinger_job ()
 {
-   pok_ret_t ret;
-   while (1)
-   {
-      printf ("P1T1: I will signal semaphores\n");
-      ret = pok_sem_signal (sid);
-      printf ("P1T1: pok_sem_signal, ret=%d\n", ret);
-      pok_thread_sleep (2000000);
-   }
+      for (int i = 0; i < 5; i++){
+<<<<<<< Updated upstream
+     	 printf ("P1T1");
+=======
+     	 printf ("T1\n");
+>>>>>>> Stashed changes
+      	 pok_thread_sleep (50000);
+      }
 }
 
 void* pinger_job2 ()
 {
-   pok_ret_t ret;
-   while (1)
-   {
-      printf ("P1T2: I will wait for the semaphores\n");
-      ret = pok_sem_wait (sid, 0);
-      printf ("P1T2: pok_sem_wait, ret=%d\n", ret);
-      ret = pok_sem_wait (sid, 0);
-      printf ("P1T2: pok_sem_wait, ret=%d\n", ret);
-      pok_thread_sleep (2000000);
-   }
+	for (int i = 0; i < 5; i++) {
+<<<<<<< Updated upstream
+      printf ("P1T2");
+      pok_thread_sleep (50000);
 }
+}
+=======
+      printf ("T2\n");
+      pok_thread_sleep (50000);
+}
+}
+void* pinger_job3 ()
+{
+	for (int i = 0; i < 5; i++) {
+      printf ("T3\n");
+      pok_thread_sleep (50000);
+}
+}
+
+>>>>>>> Stashed changes

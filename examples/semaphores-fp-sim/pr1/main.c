@@ -39,11 +39,20 @@ int main ()
   ret = pok_thread_create(&tid , &tattr);
   printf("[P1] pok_thread_create (1) return=%d\n", ret);
 
-  tattr.priority = 42;
+  tattr.priority = 22;
   tattr.entry = pinger_job2;
 
   ret = pok_thread_create(&tid , &tattr);
   printf("[P1] pok_thread_create (2) return=%d\n", ret);
+
+  for(int i = 0;i<5;i++){
+	pok_thread_attr_t tattr1;
+	uint8_t tid1;
+	tattr1.priority = rand();
+	tattr1.entry = pinger_job3;
+        ret = pok_thread_create(&tid1, &tattr1);
+        printf("[P1] pok_thread_create (2) return=%d\n", ret);
+  }
 
   pok_partition_set_mode (POK_PARTITION_MODE_NORMAL);
   pok_thread_wait_infinite ();

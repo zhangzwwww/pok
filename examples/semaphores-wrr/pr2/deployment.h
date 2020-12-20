@@ -15,14 +15,14 @@
  */
 
 
-#include <libc/stdio.h>
-#include <core/thread.h>
-void* pinger_job ()
-{
-   while (1)
-   {
-      printf("P2T1: begin of task\n");
-      pok_thread_sleep (5000000);
-   }
-}
+#ifndef __POK_USER_GENERATED_DEPLOYMENT_H_
+#define __POK_USER_GENERATED_DEPLOYMENT_H_ 
 
+#define POK_NEEDS_TIMER    1
+#define POK_NEEDS_THREADS  1
+
+#define POK_CONFIG_NB_THREADS 1
+
+#define POK_NEEDS_LIBC_STDLIB 1
+
+#endif

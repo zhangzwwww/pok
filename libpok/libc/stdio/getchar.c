@@ -20,7 +20,6 @@
 #if defined (POK_CONFIG_NEEDS_FUNC_GETCHAR)
 int getChar()
 {
-  
   char res=-1;
   pok_syscall1 (POK_SYSCALL_GETCHAR, (uint32_t)&res);
   return (int) res;
