@@ -65,7 +65,21 @@ void pok_partition_setup_scheduler (const uint8_t pid)
             pok_partitions[pid].sched_func  = &pok_sched_part_rms;
             break;
 #endif
-
+#ifdef POK_NEEDS_SCHED_EDF
+		case POK_SCHED_EDF:
+			pok_partitions[pid].sched_func = &pok_sched_part_edf;
+			break;
+#endif
+#ifdef POK_NEEDS_SCHED_FP
+		case POK_SCHED_FP:
+			pok_partitions[pid].sched_func = &pok_sched_part_fp;
+			break;
+#endif
+#ifdef POK_NEEDS_SCHED_WRR
+		case POK_SCHED_WRR:
+			pok_partitions[pid].sched_func = &pok_sched_part_wrr;
+			break;
+#endif
             /*
              * Default scheduling algorithm is Round Robin.
              * Yes, it sucks
@@ -128,6 +142,8 @@ void pok_partition_setup_main_thread (const uint8_t pid)
    attr.deadline = 0;
    attr.period   = 0;
    attr.time_capacity = 0;
+   attr.weight = 0;
+   attr.current_weight = 0;
 
    pok_partition_thread_create (&main_thread, &attr, pid);
    pok_partitions[pid].thread_main = main_thread;
@@ -201,6 +217,9 @@ pok_ret_t pok_partition_init ()
       pok_partitions[i].thread_main       = 0;
       pok_partitions[i].current_thread    = IDLE_THREAD;
       pok_partitions[i].prev_thread       = IDLE_THREAD; // breaks the rule of prev_thread not being idle, but it's just for init
+#ifdef POK_NEEDS_PARTITIONS_SCHEDULER
+      pok_partitions[i].weight = ((uint8_t[])POK_CONFIG_PARTITIONS_WEIGHT)[i];
+#endif
 
 #ifdef POK_NEEDS_SCHED_HFPPS
       pok_partitions[i].payback = 0;
@@ -242,6 +261,8 @@ pok_ret_t pok_partition_init ()
 
       pok_partition_setup_main_thread (i);
       pok_partitions[i].current_thread    = pok_partitions[i].thread_main;
+	  pok_partitions[i].current_weight = 0;
+	  pok_partitions[i].weight = 0;
    }
 
    return POK_ERRNO_OK;

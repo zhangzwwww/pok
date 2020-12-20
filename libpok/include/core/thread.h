@@ -38,6 +38,9 @@ typedef struct
 	 uint64_t     time_capacity;
 	 uint32_t     stack_size;
 	 uint32_t  state;
+	 /* add by sinkinben at 2020/12/15 */
+	 int weight;
+	 uint64_t arrive_time;
 } pok_thread_attr_t;
 
 

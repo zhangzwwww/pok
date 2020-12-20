@@ -92,6 +92,9 @@ typedef struct
    uint32_t               thread_index_high;   /**< The high index in the threads table */
    uint32_t               thread_index;        /**< The thread index */
 
+   int current_weight;
+   uint8_t				weight;
+
 #if defined(POK_NEEDS_LOCKOBJECTS) || defined(POK_NEEDS_ERROR_HANDLING)
    uint8_t               lockobj_index_low;   /**< The low bound in the lockobject array. */
    uint8_t               lockobj_index_high;  /**< The high bound in the lockobject array */

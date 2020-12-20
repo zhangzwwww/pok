@@ -128,6 +128,8 @@ void pok_thread_init(void)
       pok_threads[i].next_activation            = 0;
       pok_threads[i].wakeup_time                = 0;
       pok_threads[i].state                      = POK_STATE_STOPPED;
+	  pok_threads[i].weight                     = 0;
+	  pok_threads[i].current_weight             = 0;
   }
 }
 
@@ -194,6 +196,10 @@ pok_ret_t pok_partition_thread_create (uint32_t*                  thread_id,
    {
       pok_threads[id].remaining_time_capacity   = POK_THREAD_DEFAULT_TIME_CAPACITY;
       pok_threads[id].time_capacity             = POK_THREAD_DEFAULT_TIME_CAPACITY;
+   }
+
+   if (attr->weight > 0) {
+	   pok_threads[id].weight = attr->weight;
    }
 
    stack_vaddr = pok_thread_stack_addr (partition_id, pok_partitions[partition_id].thread_index);

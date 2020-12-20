@@ -1,7 +1,7 @@
 ifeq ($(TOPDIR),)
-CFLAGS += -I$(POK_PATH)/kernel/include -Werror
+CFLAGS += -I$(POK_PATH)/kernel/include
 else
-CFLAGS += -I$(TOPDIR)/kernel/include -Werror
+CFLAGS += -I$(TOPDIR)/kernel/include
 endif
 
 ifeq ($(INSTRUMENTATION),1)
